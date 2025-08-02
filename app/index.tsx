@@ -1,30 +1,54 @@
-import React from "react"
+import React, { useCallback } from "react"
 import { View, Text, TouchableOpacity, Image } from "react-native"
 import { authStyles } from "./styles"
-import { router } from "expo-router"
 import * as WebBrowser from "expo-web-browser"
+import { makeRedirectUri, useAuthRequest } from "expo-auth-session"
+import { CLIENT_ID } from "@/constants/activities"
+import { useRouter } from "expo-router"
+import { exchangeStravaToken } from "@/utils/exchangeStravaToken"
 
 WebBrowser.maybeCompleteAuthSession()
 
-const discovery = {
-	authorizationEndpoint: "https://github.com/login/oauth/authorize",
-	tokenEndpoint: "https://github.com/login/oauth/access_token",
-	revocationEndpoint: "https://github.com/settings/connections/applications/<CLIENT_ID>",
+const STRAVA_CONFIG = {
+	authorizationEndpoint: "https://www.strava.com/oauth/mobile/authorize",
+	tokenEndpoint: "https://www.strava.com/oauth/token",
+	revocationEndpoint: "https://www.strava.com/oauth/deauthorize",
 }
 
 export default function Index() {
-	const handleStravaLogin = async () => {
-		// TODO: Add your Strava OAuth logic here
-		// Example:
-		// try {
-		//   await stravaAuthService.connect()
-		//   router.replace('/(tabs)')
-		// } catch (error) {
-		//   alert(error.message)
-		// } finally {
-		//   setIsLoading(false)
-		// }
-	}
+	const [request, response, promtAsync] = useAuthRequest(
+		{
+			clientId: CLIENT_ID,
+			scopes: ["activity:read_all,activity:write"],
+			redirectUri: makeRedirectUri({
+				scheme: "trackit",
+				preferLocalhost: true,
+				path: "oauth",
+			}),
+		},
+		STRAVA_CONFIG
+	)
+
+	const router = useRouter()
+
+	const onPressStravaAuth = useCallback(async () => {
+		if (request) {
+			await promtAsync()
+			if (response?.type === "success") {
+				const { code, scope } = response.params
+				if (scope && scope.includes("activity:read_all") && scope.includes("activity:write")) {
+					const success = await exchangeStravaToken(code)
+					if (success) {
+						router.replace("/(tabs)")
+					} else {
+						alert("Failed to exchange code for tokens. Please try again.")
+					}
+				} else {
+					console.error("Required Strava permissions not granted. Please try again.")
+				}
+			}
+		}
+	}, [request, response, promtAsync, router])
 
 	return (
 		<View style={authStyles.container}>
@@ -42,7 +66,7 @@ export default function Index() {
 				<Text style={authStyles.title}>Track It</Text>
 				<Text style={authStyles.subtitle}>Connect with Strava to start tracking your activities</Text>
 
-				<TouchableOpacity style={authStyles.stravaButton} onPress={handleStravaLogin}>
+				<TouchableOpacity style={authStyles.stravaButton} onPress={onPressStravaAuth}>
 					<Image
 						source={require("../assets/images/login_button.png")}
 						style={authStyles.stravaButtonImage}

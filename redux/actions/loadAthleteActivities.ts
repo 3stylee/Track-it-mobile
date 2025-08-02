@@ -2,7 +2,7 @@ import { LRUCache } from "lru-cache"
 import { getDocs } from "firebase/firestore"
 import { buildFilteredQuery } from "../../utils/buildFilteredQuery"
 import { createAsyncThunk } from "@reduxjs/toolkit"
-import { PAGE_SIZE, USER_ID } from "@/constants/activities"
+import { PAGE_SIZE } from "@/constants/activities"
 import { setHasMore, setLoadingMore } from "../reducers/loadMoreReducer"
 
 let cache = new LRUCache<string, any>({ max: 5, ttl: 3600000 })
