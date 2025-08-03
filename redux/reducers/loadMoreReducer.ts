@@ -15,7 +15,7 @@ const loadMoreSlice = createSlice({
 			state.page += 1
 		},
 		resetPage: (state) => {
-			state.page = 0
+			state.page = 1
 		},
 	},
 })

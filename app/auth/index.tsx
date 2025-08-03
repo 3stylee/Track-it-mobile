@@ -70,13 +70,13 @@ export default function Index() {
 	return (
 		<View style={authStyles.container}>
 			<Image
-				source={require("../../assets/images/signUpBackground.png")}
+				source={require("@/assets/images/signUpBackground.png")}
 				style={authStyles.backgroundImage}
 				resizeMode="cover"
 			/>
 			<View style={authStyles.card}>
 				<Image
-					source={require("../../assets/images/strava-logo-2016.png")}
+					source={require("@/assets/images/strava-logo-2016.png")}
 					style={authStyles.logo}
 					resizeMode="contain"
 				/>
@@ -87,13 +87,13 @@ export default function Index() {
 					style={[authStyles.stravaButton, isLoading && { opacity: 0.5 }]}
 					onPress={isLoading ? undefined : onPressStravaAuth}>
 					<Image
-						source={require("../../assets/images/login_button.png")}
+						source={require("@/assets/images/login_button.png")}
 						style={authStyles.stravaButtonImage}
 						resizeMode="contain"
 					/>
 					{isLoading && (
 						<LottieView
-							source={require("../../assets/animations/olympics.json")}
+							source={require("@/assets/animations/olympics.json")}
 							autoPlay
 							loop
 							style={{ position: "absolute", width: 40, height: 40, opacity: 1 }}

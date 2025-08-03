@@ -1,36 +1,59 @@
 import { LRUCache } from "lru-cache"
-import { getDocs } from "firebase/firestore"
-import { buildFilteredQuery } from "../../utils/buildFilteredQuery"
 import { createAsyncThunk } from "@reduxjs/toolkit"
 import { PAGE_SIZE } from "@/constants/activities"
-import { setHasMore, setLoadingMore } from "../reducers/loadMoreReducer"
+import { setHasMore, setLoadingMore, incrementPage, resetPage } from "../reducers/loadMoreReducer"
+import * as SecureStore from "expo-secure-store"
+import { State } from "@/models/state"
+import { processAthleteActivities } from "@/utils/processAthleteActivities"
 
 let cache = new LRUCache<string, any>({ max: 5, ttl: 3600000 })
 
 export const loadAthleteActivities = createAsyncThunk(
-	"activities/loadAthleteActivities",
-	async ({ dateBefore, dateAfter }: { dateBefore?: number; dateAfter?: number }, { getState, dispatch }) => {
-		let { loadMore: page } = getState() as any
-		const loadingMore = page > 0
-		loadingMore && dispatch(setLoadingMore(true))
-
-		// Check if data is cached
-		const cacheKey = `${page}-${dateBefore}-${dateAfter}`
-		if (cache.has(cacheKey)) {
-			return cache.get(cacheKey)
+	"loadAthleteActivities",
+	async ({ loadMore = false }: { loadMore?: boolean } = {}, { dispatch, getState }) => {
+		const accessToken = await SecureStore.getItemAsync("strava_access_token")
+		if (!accessToken) {
+			throw new Error("No access token found")
 		}
 
-		// Otherwise, fetch data from Firestore
+		const state = getState() as State
+		let page = state.loadMore.page
+
+		if (loadMore) {
+			dispatch(incrementPage())
+			page = page + 1
+		} else {
+			dispatch(resetPage())
+			page = 1
+		}
+
+		const cacheKey = `athleteActivities-${page}`
+		if (cache.has(cacheKey)) {
+			return { data: cache.get(cacheKey), loadMore }
+		}
+
+		dispatch(setLoadingMore(true))
 		try {
-			const uId = USER_ID
-			const q = buildFilteredQuery(uId, getState, page, dateBefore, dateAfter)
-			const activities = (await getDocs(q)).docs.map((doc) => doc.data())
-			cache.set(cacheKey, activities)
-			activities.length < PAGE_SIZE && dispatch(setHasMore(false))
-			loadingMore && dispatch(setLoadingMore(false))
-			return activities
-		} catch (error: any) {
-			throw new Error(loadingMore ? "Failed to load more activities" : "Failed to load athlete activities")
+			const response = await fetch(
+				`https://www.strava.com/api/v3/athlete/activities?page=${page}&per_page=${PAGE_SIZE}`,
+				{
+					headers: {
+						Authorization: `Bearer ${accessToken}`,
+					},
+				}
+			)
+
+			if (!response.ok) {
+				throw new Error("Failed to load activities")
+			}
+
+			const data = await response.json()
+			const processedData = processAthleteActivities(data)
+			cache.set(cacheKey, processedData)
+			dispatch(setHasMore(data.length === PAGE_SIZE))
+			return { data: processedData, loadMore }
+		} finally {
+			dispatch(setLoadingMore(false))
 		}
 	}
 )

@@ -1,13 +1,13 @@
 import * as SecureStore from "expo-secure-store"
 
-export async function exchangeStravaToken(code: string): Promise<boolean> {
+export async function exchangeStravaToken(code: string, refresh = false): Promise<boolean> {
 	try {
 		const apiResponse = await fetch(
 			"https://da5r1u6xy4.execute-api.eu-north-1.amazonaws.com/dev/auth/exchangeToken",
 			{
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify({ code }),
+				body: JSON.stringify({ code, refresh }),
 			}
 		)
 

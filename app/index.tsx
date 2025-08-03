@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react"
-import { View, Text } from "react-native"
 import { useRouter } from "expo-router"
 import * as SecureStore from "expo-secure-store"
-import LottieView from "lottie-react-native"
+import { exchangeStravaToken } from "@/utils/exchangeStravaToken"
+import LoadingScreen from "@/components/activities/loadingScreen"
 
 export default function Index() {
 	const router = useRouter()
@@ -11,6 +11,23 @@ export default function Index() {
 	useEffect(() => {
 		checkAuthStatus()
 	}, [])
+
+	const refreshToken = async (code: string | null) => {
+		if (!code) {
+			router.replace("/auth")
+			return
+		}
+		try {
+			const success = await exchangeStravaToken(code)
+			if (success) {
+				router.replace("/(tabs)")
+			} else {
+				router.replace("/auth")
+			}
+		} catch (error) {
+			router.replace("/auth")
+		}
+	}
 
 	const checkAuthStatus = async () => {
 		const accessToken = await SecureStore.getItemAsync("strava_access_token")
@@ -23,7 +40,8 @@ export default function Index() {
 			if (currentTime < expiryTime) {
 				router.replace("/(tabs)")
 			} else {
-				router.replace("/auth")
+				const token = await SecureStore.getItemAsync("strava_refresh_token")
+				await refreshToken(token)
 			}
 		} else {
 			router.replace("/auth")
@@ -33,30 +51,7 @@ export default function Index() {
 	}
 
 	if (isChecking) {
-		return (
-			<View
-				style={{
-					flex: 1,
-					justifyContent: "center",
-					alignItems: "center",
-					backgroundColor: "#23272f",
-				}}>
-				<LottieView
-					source={require("../assets/animations/loading.json")}
-					autoPlay
-					loop
-					style={{ width: 100, height: 100 }}
-				/>
-				<Text
-					style={{
-						color: "#fff",
-						marginTop: 20,
-						fontSize: 16,
-					}}>
-					Loading...
-				</Text>
-			</View>
-		)
+		return <LoadingScreen />
 	}
 
 	return null
