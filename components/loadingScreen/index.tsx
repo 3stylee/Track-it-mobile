@@ -9,7 +9,7 @@ export default function LoadingScreen() {
 				source={require("@/assets/animations/olympics.json")}
 				autoPlay
 				loop
-				style={{ width: 100, height: 100 }}
+				style={{ width: 50, height: 50 }}
 			/>
 			<Text style={{ marginTop: 10 }}>Loading activities...</Text>
 		</View>

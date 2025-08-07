@@ -5,7 +5,7 @@ import { loadAthleteActivities } from "@/redux/actions/loadAthleteActivities"
 import { State } from "@/models/state"
 import RouteMap from "../routeMap"
 import LoadingFooter from "../loadingFooter"
-import LoadingScreen from "../loadingScreen"
+import LoadingScreen from "../../loadingScreen"
 import { AppDispatch } from "@/app/_layout"
 
 export default function DataContainer() {

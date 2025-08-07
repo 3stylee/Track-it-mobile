@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react"
 import { useRouter } from "expo-router"
 import * as SecureStore from "expo-secure-store"
 import { exchangeStravaToken } from "@/utils/exchangeStravaToken"
-import LoadingScreen from "@/components/activities/loadingScreen"
+import LoadingScreen from "@/components/loadingScreen"
 
 export default function Index() {
 	const router = useRouter()
@@ -12,13 +12,14 @@ export default function Index() {
 		checkAuthStatus()
 	}, [])
 
-	const refreshToken = async (code: string | null) => {
+	const refreshToken = async () => {
+		const code = await SecureStore.getItemAsync("strava_refresh_token")
 		if (!code) {
 			router.replace("/auth")
 			return
 		}
 		try {
-			const success = await exchangeStravaToken(code)
+			const success = await exchangeStravaToken(code, true)
 			if (success) {
 				router.replace("/(tabs)")
 			} else {
@@ -40,8 +41,7 @@ export default function Index() {
 			if (currentTime < expiryTime) {
 				router.replace("/(tabs)")
 			} else {
-				const token = await SecureStore.getItemAsync("strava_refresh_token")
-				await refreshToken(token)
+				await refreshToken()
 			}
 		} else {
 			router.replace("/auth")

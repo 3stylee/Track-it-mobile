@@ -17,7 +17,6 @@ export async function exchangeStravaToken(code: string, refresh = false): Promis
 
 		const responseData = await apiResponse.json()
 		const { userId, access_token, refresh_token, expires_at } = responseData
-
 		// Store tokens in secure storage
 		await SecureStore.setItemAsync("strava_user_id", userId.toString())
 		await SecureStore.setItemAsync("strava_access_token", access_token)
