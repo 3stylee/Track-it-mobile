@@ -5,7 +5,6 @@ import * as WebBrowser from "expo-web-browser"
 import { makeRedirectUri, useAuthRequest } from "expo-auth-session"
 import { CLIENT_ID } from "@/constants/activities"
 import { useRouter } from "expo-router"
-import { exchangeStravaToken } from "@/utils/exchangeStravaToken"
 import LottieView from "lottie-react-native"
 
 WebBrowser.maybeCompleteAuthSession()
@@ -96,7 +95,7 @@ export default function Index() {
 							source={require("@/assets/animations/olympics.json")}
 							autoPlay
 							loop
-							style={{ position: "absolute", width: 40, height: 40, opacity: 1 }}
+							style={{ position: "absolute", width: 30, height: 30, opacity: 1 }}
 						/>
 					)}
 				</TouchableOpacity>

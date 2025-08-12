@@ -1,3 +1,3 @@
-import Calendar from "@/components/calendar"
+import Calendar from "@/components/calendar/index"
 
 export default Calendar
