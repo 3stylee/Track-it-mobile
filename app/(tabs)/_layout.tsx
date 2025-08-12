@@ -1,64 +1,54 @@
 import { Tabs } from "expo-router"
-import { MaterialCommunityIcons } from "@expo/vector-icons"
-import { Colors } from "@/constants/Colors"
-import { TouchableOpacity } from "react-native"
-import { useState } from "react"
-import { SettingsModal } from "@/components/settingsModal/index"
+import { Home, Activity, Calendar, Target } from "lucide-react-native"
 
 export default function Layout() {
-	const [settingsVisible, setSettingsVisible] = useState(false)
-
-	const handleSettingsPress = () => {
-		setSettingsVisible(true)
-	}
-
 	return (
-		<>
-			<Tabs
-				screenOptions={({ route }) => ({
-					headerShown: true,
-					headerStyle: { backgroundColor: Colors.light.primary },
-					headerTintColor: "#fff",
-					headerTitleStyle: { color: "#fff" },
-					headerRight: () => (
-						<TouchableOpacity onPress={handleSettingsPress} style={{ marginRight: 15 }}>
-							<MaterialCommunityIcons name="cog" size={24} color="#fff" />
-						</TouchableOpacity>
-					),
-					tabBarIcon: ({ color, size }) => {
-						let iconName = ""
-						switch (route.name) {
-							case "index":
-								iconName = "home"
-								break
-							case "activities":
-								iconName = "format-list-bulleted"
-								break
-							case "sessions":
-								iconName = "account-group"
-								break
-							case "calendar":
-								iconName = "calendar"
-								break
-							default:
-								iconName = "circle"
-						}
-						return <MaterialCommunityIcons name={iconName as any} size={size} color={color} />
-					},
-					tabBarActiveTintColor: Colors.light.primary,
-					tabBarInactiveTintColor: Colors.light.icon,
-					tabBarStyle: {
-						backgroundColor: Colors.light.background,
-						borderTopColor: Colors.light.primary,
-					},
-				})}>
-				<Tabs.Screen name="index" options={{ title: "Home" }} />
-				<Tabs.Screen name="activities" options={{ title: "Activities" }} />
-				<Tabs.Screen name="sessions" options={{ title: "Sessions" }} />
-				<Tabs.Screen name="calendar" options={{ title: "Calendar" }} />
-			</Tabs>
-
-			<SettingsModal visible={settingsVisible} onClose={() => setSettingsVisible(false)} />
-		</>
+		<Tabs
+			screenOptions={{
+				headerShown: false,
+				tabBarStyle: {
+					backgroundColor: "#1a1a1a",
+					borderTopWidth: 1,
+					borderTopColor: "#2a2a2a",
+					height: 80,
+					paddingBottom: 20,
+					paddingTop: 10,
+				},
+				tabBarActiveTintColor: "#8b5cf6",
+				tabBarInactiveTintColor: "#6b7280",
+				tabBarLabelStyle: {
+					fontSize: 12,
+					fontWeight: "500",
+				},
+			}}>
+			<Tabs.Screen
+				name="index"
+				options={{
+					title: "Home",
+					tabBarIcon: ({ size, color }) => <Home size={size} color={color} />,
+				}}
+			/>
+			<Tabs.Screen
+				name="activities"
+				options={{
+					title: "Activities",
+					tabBarIcon: ({ size, color }) => <Activity size={size} color={color} />,
+				}}
+			/>
+			<Tabs.Screen
+				name="calendar"
+				options={{
+					title: "Calendar",
+					tabBarIcon: ({ size, color }) => <Calendar size={size} color={color} />,
+				}}
+			/>
+			<Tabs.Screen
+				name="sessions"
+				options={{
+					title: "Sessions",
+					tabBarIcon: ({ size, color }) => <Target size={size} color={color} />,
+				}}
+			/>
+		</Tabs>
 	)
 }

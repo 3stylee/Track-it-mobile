@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react"
 import { useRouter } from "expo-router"
 import * as SecureStore from "expo-secure-store"
-import { exchangeStravaToken } from "@/utils/exchangeStravaToken"
 import LoadingScreen from "@/components/loadingScreen"
 
 export default function Index() {
@@ -12,42 +11,23 @@ export default function Index() {
 		checkAuthStatus()
 	}, [])
 
-	const refreshToken = async () => {
-		const code = await SecureStore.getItemAsync("strava_refresh_token")
-		if (!code) {
+	const checkAuthStatus = async () => {
+		const userId = await SecureStore.getItemAsync("strava_user_id")
+		if (!userId) {
 			router.replace("/auth")
+			setIsChecking(false)
 			return
 		}
+
 		try {
-			const success = await exchangeStravaToken(code, true)
-			if (success) {
-				router.replace("/(tabs)")
-			} else {
-				router.replace("/auth")
-			}
+			// get last_synced from database
+			router.replace("/(tabs)")
 		} catch (error) {
+			console.error("Failed to fetch user status", error)
 			router.replace("/auth")
+		} finally {
+			setIsChecking(false)
 		}
-	}
-
-	const checkAuthStatus = async () => {
-		const accessToken = await SecureStore.getItemAsync("strava_access_token")
-		const expiresAt = await SecureStore.getItemAsync("strava_expires_at")
-
-		if (accessToken && expiresAt) {
-			const expiryTime = parseInt(expiresAt) * 1000
-			const currentTime = Date.now()
-
-			if (currentTime < expiryTime) {
-				router.replace("/(tabs)")
-			} else {
-				await refreshToken()
-			}
-		} else {
-			router.replace("/auth")
-		}
-
-		setIsChecking(false)
 	}
 
 	if (isChecking) {
