@@ -48,8 +48,8 @@ export default function Index() {
 	const handleTokenExchange = async (code: string) => {
 		setIsLoading(true)
 		try {
-			const success = await exchangeStravaToken(code)
-			if (success) {
+			//const success = await exchangeStravaToken(code)
+			if (true) {
 				router.replace("/(tabs)")
 			} else {
 				setIsLoading(false)

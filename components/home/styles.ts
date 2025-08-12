@@ -13,7 +13,7 @@ export const styles = StyleSheet.create({
 	},
 	content: {
 		flex: 1,
-		paddingHorizontal: 20,
+		paddingHorizontal: 15,
 	},
 	header: {
 		flexDirection: "row",
@@ -79,14 +79,14 @@ export const styles = StyleSheet.create({
 		flexDirection: "row",
 		justifyContent: "space-between",
 		marginTop: 8,
-		marginBottom: 24,
+		marginBottom: 20,
 		gap: 12,
 	},
 	chartContainer: {
 		backgroundColor: "#1a1a1a",
 		borderRadius: 16,
 		padding: 20,
-		marginBottom: 24,
+		marginBottom: 15,
 		borderWidth: 1,
 		borderColor: "#2a2a2a",
 	},
@@ -97,7 +97,7 @@ export const styles = StyleSheet.create({
 		marginBottom: 16,
 	},
 	activitiesContainer: {
-		marginBottom: 24,
+		marginBottom: 20,
 	},
 	quickStats: {
 		backgroundColor: "#1a1a1a",

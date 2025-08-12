@@ -25,7 +25,7 @@ export default function Home() {
 	}
 
 	return (
-		<SafeAreaView style={styles.container} edges={['top']}>
+		<SafeAreaView style={styles.container} edges={["top"]}>
 			{/* Sticky Header */}
 			<View style={styles.stickyHeader}>
 				<View style={styles.header}>
